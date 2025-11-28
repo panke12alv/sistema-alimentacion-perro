@@ -1,8 +1,8 @@
-# src/models/historial.py
 from dataclasses import dataclass
 from src.db_connection import get_conn
 from src.models.perro import Perro
 from src.models.alimento import Alimento
+from datetime import datetime
 
 @dataclass
 class HistorialComida:
@@ -18,8 +18,10 @@ class HistorialComida:
         conn = get_conn()
         try:
             cur = conn.cursor()
-            cur.execute("INSERT INTO comidas (perro_id, alimento_id, cantidad, notas) VALUES (%s,%s,%s,%s)",
-                        (perro_id, alimento_id, cantidad, notas))
+            cur.execute(
+                "INSERT INTO comidas (perro_id, alimento_id, cantidad, notas) VALUES (%s,%s,%s,%s)",
+                (perro_id, alimento_id, cantidad, notas)
+            )
             conn.commit()
             cid = cur.lastrowid
             cur.execute("SELECT fecha FROM comidas WHERE id=%s", (cid,))
@@ -34,7 +36,22 @@ class HistorialComida:
         conn = get_conn()
         try:
             cur = conn.cursor()
-            cur.execute("SELECT id, perro_id, alimento_id, cantidad, fecha, notas FROM comidas WHERE perro_id=%s ORDER BY fecha DESC", (perro_id,))
+            cur.execute(
+                "SELECT id, perro_id, alimento_id, cantidad, fecha, notas FROM comidas WHERE perro_id=%s ORDER BY fecha DESC",
+                (perro_id,)
+            )
+            rows = cur.fetchall()
+            return [cls(*r) for r in rows]
+        finally:
+            cur.close()
+            conn.close()
+
+    @classmethod
+    def listar_todos(cls):
+        conn = get_conn()
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT id, perro_id, alimento_id, cantidad, fecha, notas FROM comidas ORDER BY fecha DESC")
             rows = cur.fetchall()
             return [cls(*r) for r in rows]
         finally:

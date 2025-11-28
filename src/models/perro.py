@@ -1,4 +1,3 @@
-# src/models/perro.py
 from dataclasses import dataclass
 from src.db_connection import get_conn
 
@@ -56,8 +55,10 @@ class Perro:
         conn = get_conn()
         try:
             cur = conn.cursor()
-            cur.execute("UPDATE perros SET nombre=%s, raza=%s, edad=%s, peso=%s, propietario_nombre=%s, rutina_id=%s WHERE id=%s",
-                        (self.nombre, self.raza, self.edad, self.peso, self.propietario_nombre, self.rutina_id, self.id))
+            cur.execute(
+                "UPDATE perros SET nombre=%s, raza=%s, edad=%s, peso=%s, propietario_nombre=%s, rutina_id=%s WHERE id=%s",
+                (self.nombre, self.raza, self.edad, self.peso, self.propietario_nombre, self.rutina_id, self.id)
+            )
             conn.commit()
         finally:
             cur.close()
