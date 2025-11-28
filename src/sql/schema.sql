@@ -12,6 +12,16 @@ CREATE TABLE IF NOT EXISTS perros (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS rutinas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    perro_id INT NOT NULL,
+    alimentos_ids VARCHAR(255),  -- ids de alimentos separados por coma o JSON
+    horarios VARCHAR(255),       -- horarios como '08:00,13:00,18:00' o JSON
+    cantidad_total_por_dia FLOAT,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (perro_id) REFERENCES perros(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS alimentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo VARCHAR(100) NOT NULL,
@@ -20,6 +30,16 @@ CREATE TABLE IF NOT EXISTS alimentos (
     unidad VARCHAR(20) DEFAULT 'g',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rol ENUM('DUENO','ADMIN') DEFAULT 'DUENO'
+);
+
+
+
 
 CREATE TABLE IF NOT EXISTS comidas (
     id INT AUTO_INCREMENT PRIMARY KEY,

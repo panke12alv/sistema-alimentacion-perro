@@ -1,4 +1,3 @@
-# src/models/usuario.py
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
@@ -8,26 +7,36 @@ from src.db_connection import get_conn
 class Usuario:
     id: Optional[int]
     nombre: str
-    email: Optional[str] = None
-    password_hash: Optional[str] = None
     fecha_registro: Optional[datetime] = None
-    rol: str = "DUEÑO"  # DUEÑO or VETERINARIO
+    rol: str = "DUENO"
 
     @classmethod
-    def crear(cls, nombre, email=None, password_hash=None, rol="DUEÑO"):
+    def crear(cls, nombre: str, rol: str = "DUENO"):
         conn = get_conn()
         try:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO usuarios (nombre, email, password_hash, fecha_registro, rol) VALUES (%s, %s, %s, NOW(), %s)",
-                (nombre, email, password_hash, rol)
+                "INSERT INTO usuarios (nombre, rol, fecha_registro) VALUES (%s, %s, NOW())",
+                (nombre, rol)
             )
             conn.commit()
             uid = cur.lastrowid
-            return cls(uid, nombre, email, password_hash, None, rol)
+            return cls(uid, nombre, datetime.now(), rol)
         finally:
             cur.close()
             conn.close()
 
-    # Nota: en este ejemplo simple asumimos existencia de tabla usuarios si la deseas,
-    # pero para cubrir el requisito de 3 tablas principales la app usa perros, alimentos, comidas.
+    @classmethod
+    def buscar_por_id(cls, id_: int):
+        conn = get_conn()
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT id, nombre, fecha_registro, rol FROM usuarios WHERE id=%s",
+                (id_,)
+            )
+            r = cur.fetchone()
+            return cls(*r) if r else None
+        finally:
+            cur.close()
+            conn.close()

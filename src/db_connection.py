@@ -1,4 +1,3 @@
-# src/db_connection.py
 import os
 from mysql.connector import pooling, Error
 from dotenv import load_dotenv
